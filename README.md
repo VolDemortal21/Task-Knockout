@@ -1,4 +1,4 @@
-# Task Knockout
+# Task-Knockout
 
 Task Knockout is a multiplayer task-race board game built with Python and Tkinter.
 Players join a host over a local network or VPN, race to complete randomized video
