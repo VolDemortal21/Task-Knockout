@@ -1,0 +1,7 @@
+taskknockout_host_config.json
+taskknockout_client_config.json
+__pycache__/
+*.pyc
+.venv/
+venv/
+.env
