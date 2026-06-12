@@ -47,6 +47,15 @@ No third-party Python packages are required.
 The app will also create (or update if there is one) small local config files to remember the last used player
 name or host IP. (It's in the same folder/place that the script is in.)
 
+## Included Task Pool
+
+FYI: this project includes a pre-made `tasks.json` file for convenience. You do
+not have to come up with a large task list before playing; the included file gives
+you a starting pool of easy, medium, hard, and impossible tasks right away.
+
+You can still edit, remove, or add tasks from inside the host app with
+**Manage Tasks**.
+
 ## Hosting A Game
 
 Run `taskknockout_host.py`, enter your player name, then click **Host Game**.
