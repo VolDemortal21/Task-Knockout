@@ -216,7 +216,6 @@ class TaskKnockout:
         self.heartbeat_after_id = None
 
         self.name_entry = None
-        self.ip_entry = None
         self.easy_var = None
         self.medium_var = None
         self.hard_var = None
@@ -1032,21 +1031,6 @@ class TaskKnockout:
             fill="x", pady=(0, 10)
         )
         self.make_button(outer, "Host Game", self.host_game).pack(fill="x", pady=(0, 16))
-
-        self.make_label(outer, "Host IP", SUBTITLE_FONT).pack(anchor="w")
-        self.ip_entry = tk.Entry(
-            outer,
-            font=BODY_FONT,
-            width=30,
-            bg=PANEL_BG,
-            fg=TEXT,
-            insertbackground=TEXT,
-            relief="solid",
-            bd=1,
-        )
-        self.ip_entry.pack(fill="x", pady=(4, 10))
-
-        self.make_button(outer, "Connect", self.connect_to_host).pack(fill="x")
         self.make_label(
             outer,
             self.format_task_meta_line(),
@@ -1547,49 +1531,6 @@ class TaskKnockout:
         except tk.TclError:
             pass
         self.update_start_button_state()
-
-    def connect_to_host(self):
-        ip = self.ip_entry.get().strip() if self.ip_entry is not None else ""
-        if not ip:
-            self.show_error("Enter a host IP before connecting.")
-            return
-
-        self.is_host = False
-        self.player = 2
-        self.match_active = False
-        self.player_names[2] = self.get_entered_name("Player 2")
-        self.disconnected = False
-
-        self.clear_window()
-
-        outer = tk.Frame(self.root, bg=BG, padx=24, pady=22)
-        outer.pack(fill="both", expand=True)
-
-        self.make_label(outer, "Connecting...", TITLE_FONT).pack(pady=(0, 12))
-        self.make_label(
-            outer,
-            f"Trying {ip}:{PORT}",
-            BODY_FONT,
-            fg=MUTED_TEXT,
-        ).pack()
-
-        threading.Thread(target=self.connect_thread, args=(ip,), daemon=True).start()
-
-    def connect_thread(self, ip):
-        try:
-            self.conn = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            self.conn.connect((ip, PORT))
-            self.send_message(
-                {
-                    "type": "join",
-                    "name": self.player_names[2],
-                    "task_metadata": self.task_metadata(),
-                }
-            )
-            self.start_reader_thread()
-        except OSError as exc:
-            if not self.disconnected:
-                self.root.after(0, lambda: self.show_error(f"Connection error: {exc}"))
 
     def show_waiting_lobby(self):
         self.clear_window()
