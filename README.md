@@ -1,4 +1,4 @@
-# Task-Knockout
+# Task Knockout
 
 Task Knockout is a multiplayer task-race board game built with Python and Tkinter.
 Players join a host over a local network or VPN, race to complete randomized video
@@ -29,7 +29,7 @@ players who want to join a lobby should use `taskknockout_client.py`.
 
 ## Requirements
 
-- Python 3
+- Python 3.10 or newer
 - Tkinter, which is included with most standard Python installations
 - All players must be able to reach the host on TCP port `5000`
 
@@ -44,31 +44,8 @@ No third-party Python packages are required.
 | `tasks.json` | Saved task pool used to generate boards. |
 | `README.md` | Project guide. |
 
-The app may also create small local config files to remember the last used player
-name or host IP.
-
-## Quick Start
-
-1. Open a terminal in this folder.
-2. Start the host:
-
-   ```powershell
-   python taskknockout_host.py
-   ```
-
-3. On each client computer, start the client:
-
-   ```powershell
-   python taskknockout_client.py
-   ```
-
-4. The host clicks **Host Game**.
-5. Clients enter the host IP and click **Connect**.
-6. Clients click **READY** in the lobby.
-7. The host chooses the match settings and clicks **Start Match**.
-
-On Windows, `py taskknockout_host.py` and `py taskknockout_client.py` may also work
-if `python` is not mapped in your terminal.
+The app will also create (or update if there is one) small local config files to remember the last used player
+name or host IP. (It's in the same folder/place that the script is in.)
 
 ## Hosting A Game
 
@@ -81,8 +58,8 @@ For players on the same computer, clients can connect to:
 127.0.0.1
 ```
 
-For players on the same local network, share the host machine's local IP address.
-For online play, use the IP address provided by your LAN/VPN tool.
+For players on the same local network, share the host machine's local IP address (which can also be copied)
+For online play, Hamachi is recommended or you can use the IP address provided by your LAN/VPN tool.
 
 The host can:
 
@@ -114,7 +91,7 @@ The host controls the board before the match begins.
 | Easy Tasks | Number of easy tasks on the board. |
 | Medium Tasks | Number of medium tasks on the board. |
 | Hard Tasks | Number of hard tasks on the board. |
-| Impossible Tiles | Number of impossible tasks when Swap Mode is enabled. Use `Auto` or a whole number. |
+| Impossible Tiles | Number of impossible tasks when Swap Mode is enabled (Default is off). Use `Auto` or a whole number. |
 
 Easy, medium, and hard task counts must add up to the number of spaces on the
 board. If Swap Mode is enabled, impossible tiles replace some of those normal
@@ -150,7 +127,7 @@ When Hard Verification is on:
 
 - Hard tasks enter a pending state for 10 seconds.
 - Impossible tasks enter a pending state for 30 seconds.
-- The host can click a pending tile to review it.
+- The host can click a pending tile to review it and if needed ask for proof from the player that did it.
 - The host may award the tile to the claimant or reset the tile.
 - If the host does not intervene, the pending tile auto-completes when the timer
   finishes.
@@ -170,14 +147,14 @@ same difficulty.
 
 Swap notes:
 
-- Swaps only work on empty normal-difficulty tiles.
+- Swaps only work on empty Easy, Medium, or Hard difficulty tiles.
 - Completed, pending, owned, and impossible tiles cannot be swapped.
-- The replacement task must be unused and have the same difficulty.
+- The replacement task is unused on the current board and it has the same difficulty.
 - Keeping extra easy, medium, and hard tasks in `tasks.json` gives Swap Mode more
   room to reroll tiles.
 
 When **Impossible Tiles** is set to `Auto`, the game chooses a small number based
-on board size. Very small boards get no impossible tiles.
+on board size. Very small boards (Less than 20) get no impossible tiles.
 
 ## Technical Breakdown
 
@@ -224,7 +201,7 @@ board size:
 
 The final number is also capped by the number of impossible tasks available in
 `tasks.json`, so the game will not request more impossible tasks than actually
-exist.
+exist (So if you wanted 20 Impossible tasks but only have 10 in the `tasks.json` file then it won't start a game).
 
 ### How Impossible Tiles Replace Other Tasks
 
@@ -254,10 +231,26 @@ Medium: 10
 Hard: 3
 Impossible: 2
 ```
+Another example:
 
-The two impossible tiles replaced two hard tasks first. If there are not enough
-hard tasks to replace, the remaining replacements come from medium tasks, then
-easy tasks.
+A 25-space board with:
+
+```text
+Easy: 10
+Medium: 10
+Hard: 5
+Impossible Tiles: 20
+```
+
+the final generated board becomes:
+
+```text
+Easy: 5
+Medium: 0
+Hard: 0
+Impossible: 20
+```
+Impossible tiles replace hard tasks first. If there are not enough hard tasks to replace, the remaining replacements come from medium tasks, then easy tasks.
 
 ### Swap Rerolls
 
@@ -363,3 +356,9 @@ This project uses only the Python standard library:
 - `json` for task/config storage
 
 There is no build step. Run the Python scripts directly from the project folder.
+
+## License
+
+This project is released under the MIT License.
+
+You can use it, modify it, and share it for free.
