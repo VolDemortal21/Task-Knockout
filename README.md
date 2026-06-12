@@ -1,140 +1,319 @@
-# Task-Knockout
+# Task Knockout
 
-Task-Knockout is a small multiplayer task-board race game made with Python and Tkinter.
+Task Knockout is a multiplayer task-race board game built with Python and Tkinter.
+Players join a host over a local network or VPN, race to complete randomized video
+game challenges, and claim tiles on a shared board until someone reaches the score
+target.
 
-One player hosts the game, the other players connect as clients, and everyone races to complete tasks on a shared board. The host can choose board size, task difficulty amounts, hard verification, swap mode, and more.
+The game is designed for challenge runs, variety gaming, party streams, or any
+session where everyone is playing their own game and racing to prove they completed
+the same style of task first.
 
-It is mostly meant as a fun “play random games and complete random objectives” type of tool.
+Important: the host app only hosts games. Host-to-host connecting is not supported;
+players who want to join a lobby should use `taskknockout_client.py`.
 
 ## Features
 
-* Multiplayer host/client setup
-* Up to 5 players
-* Custom task pool through `tasks.json`
-* Easy / Medium / Hard / Impossible task difficulties
-* Hard Verification mode
-* Swap Mode with reroll animations
-* Local saved names and last-used IPs
-* Built-in task manager on the host side
-* Works over LAN, or over VPN tools if needed
+- Host-managed lobby for up to 5 total players.
+- Dedicated host and client apps.
+- Custom task pool stored in `tasks.json`.
+- Task difficulties: `easy`, `medium`, `hard`, and `impossible`.
+- Configurable board size from 1x1 to 8x8.
+- Configurable win target, including an automatic target based on board size and
+  player count.
+- Difficulty presets for quick setup.
+- Optional Hard Verification mode for delayed approval on harder tasks.
+- Optional Swap Mode with impossible tiles and task rerolls.
+- Ready checks, countdown, match timer, score bar, and winner banner.
+- Basic heartbeat handling for disconnected players.
 
 ## Requirements
 
-* Python 3.10 or newer
-* No extra Python packages needed
+- Python 3
+- Tkinter, which is included with most standard Python installations
+- All players must be able to reach the host on TCP port `5000`
 
-Tkinter is included with most normal Python installs.
-On some Linux installs, you may need to install Tkinter separately, for example `python3-tk`.
+No third-party Python packages are required.
 
 ## Files
 
-The main files are:
+| File | Purpose |
+| --- | --- |
+| `taskknockout_host.py` | Main host app. It hosts matches and manages tasks. |
+| `taskknockout_client.py` | Lightweight client app for players joining a host. |
+| `tasks.json` | Saved task pool used to generate boards. |
+| `README.md` | Project guide. |
 
-```text
-taskknockout_host.py
-taskknockout_client.py
-tasks.json
-.gitignore
-```
+The app may also create small local config files to remember the last used player
+name or host IP.
 
-Generated local config files are created automatically when the app runs. You do not need to download or edit them manually.
+## Quick Start
 
-## How to Play on the Same PC
-
-This is the easiest way to test it.
-
-1. Open a terminal in the game folder.
+1. Open a terminal in this folder.
 2. Start the host:
 
-```bash
-python taskknockout_host.py
-```
+   ```powershell
+   python taskknockout_host.py
+   ```
 
-3. Open another terminal in the same folder.
-4. Start the client:
+3. On each client computer, start the client:
 
-```bash
-python taskknockout_client.py
-```
+   ```powershell
+   python taskknockout_client.py
+   ```
 
-5. On the client, use:
+4. The host clicks **Host Game**.
+5. Clients enter the host IP and click **Connect**.
+6. Clients click **READY** in the lobby.
+7. The host chooses the match settings and clicks **Start Match**.
+
+On Windows, `py taskknockout_host.py` and `py taskknockout_client.py` may also work
+if `python` is not mapped in your terminal.
+
+## Hosting A Game
+
+Run `taskknockout_host.py`, enter your player name, then click **Host Game**.
+The lobby shows the IP address and port that clients should use.
+
+For players on the same computer, clients can connect to:
 
 ```text
 127.0.0.1
 ```
 
-6. Connect, ready up, then start the match from the host window.
-
-## How to Play on LAN
-
-Use this if everyone is on the same Wi-Fi / local network.
-
-1. The host runs:
-
-```bash
-python taskknockout_host.py
-```
-
-2. The host clicks `Host Game`.
-3. The host shares the IP shown in the host window.
-4. Other players run:
-
-```bash
-python taskknockout_client.py
-```
-
-5. Clients enter the host IP and connect.
-6. Everyone readies up.
-7. The host chooses settings and starts the match.
-
-The default port is:
-
-```text
-5000
-```
-
-If clients cannot connect, the host may need to allow Python through the firewall.
-
-## Playing Online
-
-LAN is recommended because it is the simplest.
-
-If LAN is not an option, you can use a VPN/LAN tool such as Hamachi, Radmin VPN, ZeroTier, or something similar.
-
-Basic idea:
-
-1. Everyone joins the same VPN network.
-2. The host starts `taskknockout_host.py`.
-3. The host shares their VPN/LAN IP.
-4. Clients enter that IP in `taskknockout_client.py`.
-5. Connect and play normally.
-
-Do not use `127.0.0.1` for other people connecting to you.
-That only works when the host and client are on the same computer.
-
-## Host Controls
+For players on the same local network, share the host machine's local IP address.
+For online play, use the IP address provided by your LAN/VPN tool.
 
 The host can:
 
-* Manage the task pool
-* Choose board rows and columns
-* Choose win target
-* Choose Easy / Medium / Hard task amounts
-* Enable or disable Hard Verification
-* Enable or disable Swap Mode
-* Start and reset matches
+- Manage the task pool before starting.
+- See connected players and ready states.
+- Choose board rows and columns.
+- Choose the win target or leave it on `Auto`.
+- Choose the number of easy, medium, and hard tasks.
+- Enable or disable Hard Verification.
+- Enable or disable Swap Mode.
+- Start the match once at least one client is connected and all clients are ready.
 
-## Task Pool
+## Joining A Game
 
-Tasks are stored in:
+Run `taskknockout_client.py`, enter your name, enter the host IP, then click
+**Connect**. Once connected, click **READY** and wait for the host to start.
+
+The host is always Player 1. Joined players are assigned the next available slot.
+
+## Match Setup
+
+The host controls the board before the match begins.
+
+| Setting | Description |
+| --- | --- |
+| Board Rows | Number of board rows. Must be between `1` and `8`. |
+| Board Cols | Number of board columns. Must be between `1` and `8`. |
+| Win Target | Number of claimed tiles needed to win. Use `Auto` or a whole number. |
+| Easy Tasks | Number of easy tasks on the board. |
+| Medium Tasks | Number of medium tasks on the board. |
+| Hard Tasks | Number of hard tasks on the board. |
+| Impossible Tiles | Number of impossible tasks when Swap Mode is enabled. Use `Auto` or a whole number. |
+
+Easy, medium, and hard task counts must add up to the number of spaces on the
+board. If Swap Mode is enabled, impossible tiles replace some of those normal
+tasks when the board is generated.
+
+## How To Play
+
+Each tile contains a task. Complete the task in your game, then claim the tile in
+Task Knockout. Your color fills the tile and your score increases by one.
+
+The first player to reach the win target wins. When a winner is found, the match
+timer stops and the winner banner appears for everyone.
+
+### Controls
+
+| Action | Control |
+| --- | --- |
+| Claim an empty tile | Left click the tile |
+| Unclaim your own completed tile | Left click your completed tile again |
+| Mark a tile as possible | Shift + left click |
+| Remove your possible marker | Shift + left click the tile again |
+| Review a pending tile as host | Host left clicks the pending tile |
+
+Possible markers are local helper marks. They help you remember tasks you may be
+able to complete, but they do not claim the tile and are not a shared score state.
+Impossible tiles cannot be marked as possible.
+
+## Hard Verification
+
+When Hard Verification is off, claiming a tile completes it immediately.
+
+When Hard Verification is on:
+
+- Hard tasks enter a pending state for 10 seconds.
+- Impossible tasks enter a pending state for 30 seconds.
+- The host can click a pending tile to review it.
+- The host may award the tile to the claimant or reset the tile.
+- If the host does not intervene, the pending tile auto-completes when the timer
+  finishes.
+
+Opening the host review dialog pauses that tile's auto-complete timer until the
+dialog is closed.
+
+## Swap Mode
+
+Swap Mode adds impossible tiles to the board. Impossible tiles are meant to be
+high-risk, high-reward tasks.
+
+When a player completes an impossible tile, they earn a swap charge and must use
+that swap before claiming another tile. To use a swap, click an empty,
+non-impossible tile. The game rerolls that tile into another unused task of the
+same difficulty.
+
+Swap notes:
+
+- Swaps only work on empty normal-difficulty tiles.
+- Completed, pending, owned, and impossible tiles cannot be swapped.
+- The replacement task must be unused and have the same difficulty.
+- Keeping extra easy, medium, and hard tasks in `tasks.json` gives Swap Mode more
+  room to reroll tiles.
+
+When **Impossible Tiles** is set to `Auto`, the game chooses a small number based
+on board size. Very small boards get no impossible tiles.
+
+## Technical Breakdown
+
+This section explains how the main match systems work internally.
+
+### Board Generation
+
+The host generates the board when the countdown finishes. The board size is:
 
 ```text
-tasks.json
+Board Rows x Board Cols
 ```
 
-You can edit tasks from inside the host app using `Manage Tasks`.
+The easy, medium, and hard task counts must add up to that board size. The host
+then randomly samples tasks from `tasks.json` for each difficulty and shuffles the
+final board.
 
-The task pool supports:
+For example, a 5x5 board has 25 spaces, so easy + medium + hard must equal 25.
+
+### Auto Win Target
+
+When **Win Target** is set to `Auto`, the game uses:
+
+```text
+ceil(board spaces / active players)
+```
+
+That means a 5x5 board with 2 players uses `ceil(25 / 2)`, so the target is 13.
+
+### Impossible Tile Calculation
+
+Impossible tiles only matter when Swap Mode is enabled. If Swap Mode is off, the
+impossible tile count is always 0.
+
+When **Impossible Tiles** is set to `Auto`, the game calculates the count from the
+board size:
+
+| Board spaces | Auto impossible tiles |
+| --- | --- |
+| Fewer than 20 | 0 |
+| 20 to 35 | 1 |
+| 36 to 63 | 2 |
+| 64 or more | 3 |
+
+The final number is also capped by the number of impossible tasks available in
+`tasks.json`, so the game will not request more impossible tasks than actually
+exist.
+
+### How Impossible Tiles Replace Other Tasks
+
+Impossible tiles do not add extra spaces to the board. They replace normal tasks
+after the host has already chosen easy, medium, and hard counts.
+
+Replacement order is:
+
+```text
+hard -> medium -> easy
+```
+
+So if the host sets a 25-space board with:
+
+```text
+Easy: 10
+Medium: 10
+Hard: 5
+Impossible Tiles: 2
+```
+
+the final generated board becomes:
+
+```text
+Easy: 10
+Medium: 10
+Hard: 3
+Impossible: 2
+```
+
+The two impossible tiles replaced two hard tasks first. If there are not enough
+hard tasks to replace, the remaining replacements come from medium tasks, then
+easy tasks.
+
+### Swap Rerolls
+
+Completing an impossible tile in Swap Mode gives that player a swap charge. The
+player must spend the swap before claiming another tile.
+
+When the player clicks a valid tile to spend the swap, the game:
+
+1. Checks that the tile is empty, normal difficulty, and not pending or owned.
+2. Looks for unused tasks in `tasks.json` with the same difficulty as that tile.
+3. Randomly chooses one unused replacement task.
+4. Replaces the tile's task text and ID.
+5. Spends one swap charge.
+
+The rerolled tile keeps the same difficulty. A hard tile rerolls into another hard
+task, a medium tile into another medium task, and an easy tile into another easy
+task. Impossible tiles cannot be rerolled this way.
+
+If no unused task of that difficulty is available, the swap fails and the player
+must pick a different valid tile.
+
+### Hard Verification Timing
+
+When Hard Verification is on, hard and impossible claims become pending before
+they count as completed.
+
+```text
+Hard task: 10 seconds pending
+Impossible task: 30 seconds pending
+```
+
+If the timer finishes, the tile is awarded automatically. If the host opens the
+pending review dialog, the timer pauses until the dialog closes. The host can then
+award the tile to the claimant or reset it back to empty.
+
+## Managing Tasks
+
+Click **Manage Tasks** in the host app to open the task editor.
+
+You can:
+
+- Add a task.
+- Edit the selected task.
+- Remove the selected task.
+- Choose a task difficulty.
+
+Tasks are saved to `tasks.json`. The host syncs the active task pool to connected
+players when they join or when the pool changes before a match.
+
+Each task has:
+
+- A unique ID.
+- Task text.
+- A difficulty value.
+
+Valid difficulty values are:
 
 ```text
 easy
@@ -143,57 +322,44 @@ hard
 impossible
 ```
 
-Impossible tasks are mainly used with Swap Mode.
+## Network Notes
 
-## Hard Verification
+Task Knockout uses TCP port `5000`.
 
-When Hard Verification is on, hard tasks do not complete instantly.
+If clients cannot connect:
 
-Instead, they enter a pending state and complete after a short timer, unless the host reviews them manually.
+- Make sure the host app is running and hosting a lobby.
+- Confirm the clients are using the correct host IP.
+- Allow Python through the host computer's firewall.
+- If playing online, use a VPN/LAN tool and share that tool's IP address.
+- Use `127.0.0.1` only when the client is running on the same computer as the host.
 
-## Swap Mode
+Clients cannot join once a match is already in progress.
 
-Swap Mode adds impossible tasks and lets players earn swaps.
+## Troubleshooting
 
-When a player completes an impossible task, they earn a swap and must use it before claiming another tile. A swap rerolls an empty normal tile into a different task of the same difficulty.
+**The Start Match button is disabled.**  
+At least one client must be connected, every connected client must be ready, and
+the task counts must match the board size.
 
-## Local Config Files
+**The game says there are not enough tasks.**  
+Add more tasks for the missing difficulty in **Manage Tasks**, or lower that
+difficulty's count in match setup.
 
-The app may create these files automatically:
+**A swap does not work.**  
+The selected tile must be empty, normal difficulty, and have an unused replacement
+task of the same difficulty available.
 
-```text
-taskknockout_host_config.json
-taskknockout_client_config.json
-```
+**A player disconnected.**  
+The host removes that player from the active connection list. Pending tiles owned
+by that player are reset.
 
-They save small local things like player names or last-used IPs.
+## Development Notes
 
-These files are ignored by Git and should not be uploaded publicly.
+This project uses only the Python standard library:
 
-## Common Issues
+- `tkinter` for the UI
+- `socket` and `threading` for networking
+- `json` for task/config storage
 
-### Client cannot connect
-
-Try these:
-
-* Make sure the host app is running.
-* Make sure the client is using the correct host IP.
-* Make sure everyone is on the same LAN or VPN network.
-* Allow Python through the host computer’s firewall.
-* Make sure port `5000` is not blocked.
-
-### 127.0.0.1 does not work for my friend
-
-`127.0.0.1` only means “this computer.”
-
-Use the host’s LAN IP or VPN IP instead.
-
-### Tasks are missing or weird
-
-Make sure `tasks.json` is in the same folder as `taskknockout_host.py`.
-
-## License
-
-This project is released under the MIT License.
-
-You can use it, modify it, and share it for free.
+There is no build step. Run the Python scripts directly from the project folder.
